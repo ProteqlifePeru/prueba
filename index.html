@@ -32,7 +32,7 @@
         }
 
         .header {
-            background: #194A8C; /* Azul institucional */
+            background: #194A8C;
             color: white;
             padding: 24px;
             text-align: center;
@@ -125,26 +125,6 @@
             box-shadow: none;
         }
 
-        .btn-search.loading {
-            background: #194A8C;
-            opacity: 0.8;
-        }
-
-        .btn-search.loading .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 8px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         .message {
             display: none;
             padding: 16px;
@@ -158,12 +138,6 @@
             background: #ffebee;
             color: #d32f2f;
             border: 1px solid #ffcdd2;
-        }
-
-        .message.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #81c784;
         }
 
         .result {
@@ -207,6 +181,9 @@
 
         .value {
             flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             color: #333;
         }
 
@@ -214,6 +191,32 @@
             font-weight: bold;
             color: #194A8C;
             font-size: 1.1rem;
+        }
+
+        .copy-btn {
+            background: #e9ecef;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.2s;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            background: #194A8C;
+            color: white;
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+            color: white;
         }
 
         .footer {
@@ -227,14 +230,7 @@
 
         @media (max-width: 576px) {
             .content {
-                padding: 24px 20px;
-            }
-            #dni-input {
-                padding: 12px 16px 12px 46px;
-                font-size: 1rem;
-            }
-            .btn-search {
-                padding: 12px;
+                padding: 24px 16px;
             }
         }
     </style>
@@ -262,7 +258,7 @@
                 <i class="fas fa-search"></i> Buscar DNI
             </button>
 
-            <div class="message" id="message-error">
+            <div class="message error" id="message-error">
                 <i class="fas fa-exclamation-triangle"></i> Servidor no accesible (¿PC 172.20.60.152 encendida?)
             </div>
 
@@ -276,11 +272,21 @@
                 </div>
                 <div class="result-item">
                     <div class="label">Nombre completo:</div>
-                    <div class="value" id="res-nombre">—</div>
+                    <div class="value">
+                        <span id="res-nombre">—</span>
+                        <button class="copy-btn" onclick="copiar('res-nombre')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="result-item">
                     <div class="label">Fecha de nacimiento:</div>
-                    <div class="value" id="res-fechanac">—</div>
+                    <div class="value">
+                        <span id="res-fechanac">—</span>
+                        <button class="copy-btn" onclick="copiar('res-fechanac')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="result-item">
                     <div class="label">Sexo:</div>
@@ -300,7 +306,6 @@
         const messageError = document.getElementById('message-error');
         const resultDiv = document.getElementById('result');
 
-        // Validación en tiempo real
         dniInput.addEventListener('input', () => {
             dniInput.value = dniInput.value.replace(/\D/g, '').slice(0, 8);
             actualizarEstado();
@@ -330,11 +335,9 @@
                 return;
             }
 
-            // Resetear estados
             messageError.style.display = 'none';
             resultDiv.style.display = 'none';
 
-            // Activar loading
             btnSearch.disabled = true;
             btnSearch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
 
@@ -352,7 +355,6 @@
 
                 const data = await response.json();
 
-                // Mostrar resultado
                 document.getElementById('res-dni').textContent = data.DNI || data.dni || dni;
                 document.getElementById('res-nombre').textContent = 
                     data.NOMBRE_COMPLETO || data.nombre_completo || '[Sin nombre]';
@@ -364,13 +366,37 @@
                 resultDiv.style.display = 'block';
 
             } catch (err) {
-                console.error('Error:', err);
                 messageError.style.display = 'block';
             } finally {
-                // Restaurar botón
                 btnSearch.disabled = false;
                 btnSearch.innerHTML = '<i class="fas fa-search"></i> Buscar DNI';
             }
+        }
+
+        function copiar(idElemento) {
+            const elemento = document.getElementById(idElemento);
+            const texto = elemento.innerText || elemento.textContent;
+
+            if (!texto || texto === '—') return;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = texto;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            const btn = event.target.closest('.copy-btn');
+            const icono = btn.querySelector('i');
+            const originalHTML = icono.outerHTML;
+
+            icono.className = 'fas fa-check';
+            btn.classList.add('copied');
+
+            setTimeout(() => {
+                icono.outerHTML = originalHTML;
+                btn.classList.remove('copied');
+            }, 1500);
         }
     </script>
 </body>
