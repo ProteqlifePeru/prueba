@@ -1,403 +1,429 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔍 Consulta de DNI - Sistema Local</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📞 Dashboard Llamadas 107 - ESSALUD</title>
 
-        body {
-            background: #f5f8fa;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a2d04b6a6a.js" crossorigin="anonymous"></script>
 
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
+<style>
+:root {
+  --primary: #0066cc;
+  --secondary: #00a859;
+  --accent: #e7f1ff;
+  --bg: linear-gradient(135deg,#d0e7ff,#f0f9ff);
+  --text: #222;
+  --card-bg: #fff;
+  --radius: 16px;
+  --shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
 
-        .header {
-            background: #194A8C;
-            color: white;
-            padding: 24px;
-            text-align: center;
-        }
+* {box-sizing:border-box;}
+body {
+  font-family:'Poppins',sans-serif;
+  margin:0; padding:0;
+  background: var(--bg);
+  display:flex; justify-content:center; min-height:100vh;
+}
 
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
+.container {
+  width:95%;
+  max-width:1300px;
+  margin:20px;
+}
 
-        .header p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-        }
+h1 {
+  text-align:center;
+  color: var(--primary);
+  font-size:36px;
+  font-weight:700;
+  margin-bottom:30px;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.1);
+}
 
-        .content {
-            padding: 32px;
-        }
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding:25px 30px;
+  margin-bottom:25px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover {transform: translateY(-5px); box-shadow:0 20px 50px rgba(0,0,0,0.25);}
 
-        .input-group {
-            position: relative;
-            margin-bottom: 24px;
-        }
+.section-title {
+  margin-top:20px;
+  margin-bottom:10px;
+  font-size:22px;
+  font-weight:600;
+  color: var(--primary);
+  border-left:5px solid var(--primary);
+  padding-left:10px;
+  display:flex; align-items:center; gap:8px;
+}
 
-        .input-group i {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            font-size: 1.1rem;
-        }
+label {display:block; margin-top:12px; font-weight:500; font-size:15px;}
 
-        #dni-input {
-            width: 100%;
-            padding: 14px 16px 14px 50px;
-            font-size: 1.1rem;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            outline: none;
-            transition: all 0.3s;
-        }
+input, select {
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  font-size:15px;
+  transition:0.3s;
+}
+input:focus, select:focus {
+  outline:none; border-color: var(--primary);
+  box-shadow:0 0 8px rgba(0,102,204,0.3);
+  background: var(--accent);
+}
+input[readonly], select[readonly] {background:#f0f0f0;}
 
-        #dni-input:focus {
-            border-color: #194A8C;
-            box-shadow: 0 0 0 3px rgba(25, 74, 140, 0.15);
-        }
+#nombreCompleto {
+  font-size:26px;
+  font-weight:700;
+  color:#000;
+  text-align:center;
+  border:2px solid #ccc;
+  border-radius:14px;
+  padding:12px;
+  transition:0.3s;
+}
 
-        #dni-input.valid {
-            border-color: #28a745;
-        }
+.flex {display:flex; gap:15px; flex-wrap:wrap;}
+.flex-2 > div, .flex-3 > div {flex:1;}
+.flex-3 > div {min-width:150px;}
 
-        #dni-input.invalid {
-            border-color: #dc3545;
-        }
+button {
+  padding:14px;
+  background: var(--secondary);
+  color:white;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+#btnLimpiar {background:#cc0000;}
+#btnLimpiar:hover {background:#990000;}
 
-        .btn-search {
-            width: 100%;
-            background: #194A8C;
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(25, 74, 140, 0.2);
-        }
+.info-bar {
+  background: #b0dbff;
+  color: var(--primary);
+  padding:10px 12px;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:600;
+  margin-bottom:15px;
+  text-align:center;
+}
 
-        .btn-search:hover {
-            background: #153b6d;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(25, 74, 140, 0.3);
-        }
-
-        .btn-search:disabled {
-            background: #adb5bd;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .message {
-            display: none;
-            padding: 16px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .message.error {
-            background: #ffebee;
-            color: #d32f2f;
-            border: 1px solid #ffcdd2;
-        }
-
-        .result {
-            display: none;
-            padding: 24px;
-            background: #fafafa;
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .result.show {
-            display: block;
-        }
-
-        .result-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #194A8C;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .result-item {
-            display: flex;
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .label {
-            width: 40%;
-            font-weight: 600;
-            color: #555;
-        }
-
-        .value {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #333;
-        }
-
-        .dni-value {
-            font-weight: bold;
-            color: #194A8C;
-            font-size: 1.1rem;
-        }
-
-        .copy-btn {
-            background: #e9ecef;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #666;
-            transition: all 0.2s;
-            padding: 0;
-            flex-shrink: 0;
-        }
-
-        .copy-btn:hover {
-            background: #194A8C;
-            color: white;
-        }
-
-        .copy-btn.copied {
-            background: #28a745;
-            color: white;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #888;
-            font-size: 0.9rem;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-        }
-
-        @media (max-width: 576px) {
-            .content {
-                padding: 24px 16px;
-            }
-        }
-    </style>
+@media(max-width:1000px){ h1{font-size:30px;} #nombreCompleto{font-size:22px;} }
+@media(max-width:600px){ .flex{flex-direction:column;} }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-id-card"></i> Consulta de DNI</h1>
-            <p>Sistema Local • Red Interna</p>
-        </div>
 
-        <div class="content">
-            <div class="input-group">
-                <i class="fas fa-fingerprint"></i>
-                <input 
-                    type="text" 
-                    id="dni-input" 
-                    placeholder="Ingrese DNI (8 dígitos)"
-                    maxlength="8"
-                    autocomplete="off"
-                >
-            </div>
+<div class="container">
+<h1><i class="fas fa-phone-volume"></i> Dashboard Llamadas 107 - ESSALUD</h1>
 
-            <button class="btn-search" id="btn-search">
-                <i class="fas fa-search"></i> Buscar DNI
-            </button>
+<div class="card">
+  <div class="info-bar" id="estadoConexion">Buscando conexión con el servidor... 🌐</div>
 
-            <div class="message error" id="message-error">
-                <i class="fas fa-exclamation-triangle"></i> Servidor no accesible (¿PC 172.20.60.152 encendida?)
-            </div>
+  <label>Fecha y hora de inicio ⏱️</label>
+  <input type="text" id="fechaInicio" readonly>
 
-            <div class="result" id="result">
-                <div class="result-title">
-                    <i class="fas fa-user-check"></i> Resultado de la búsqueda
-                </div>
-                <div class="result-item">
-                    <div class="label">DNI:</div>
-                    <div class="value dni-value" id="res-dni">—</div>
-                </div>
-                <div class="result-item">
-                    <div class="label">Nombre completo:</div>
-                    <div class="value">
-                        <span id="res-nombre">—</span>
-                        <button class="copy-btn" onclick="copiar('res-nombre')">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="result-item">
-                    <div class="label">Fecha de nacimiento:</div>
-                    <div class="value">
-                        <span id="res-fechanac">—</span>
-                        <button class="copy-btn" onclick="copiar('res-fechanac')">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="result-item">
-                    <div class="label">Sexo:</div>
-                    <div class="value" id="res-sexo">—</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>© 2025 • Sistema RENIEC Local • v1.0</p>
-        </div>
+  <div class="section-title"><i class="fas fa-user-md"></i> Datos del Profesional</div>
+  <div class="flex flex-2">
+    <div>
+      <label>Profesión</label>
+      <select id="profesion">
+        <option value="">Seleccione...</option>
+      </select>
     </div>
+    <div>
+      <label>Personal</label>
+      <select id="personal">
+        <option value="">Seleccione...</option>
+        <option>Juan</option>
+        <option>Pedro</option>
+        <option>Carlos</option>
+      </select>
+    </div>
+  </div>
 
-    <script>
-        const dniInput = document.getElementById('dni-input');
-        const btnSearch = document.getElementById('btn-search');
-        const messageError = document.getElementById('message-error');
-        const resultDiv = document.getElementById('result');
+  <div class="section-title"><i class="fas fa-phone"></i> Datos de la Llamada</div>
+  <label>Opciones de llamada 📞</label>
+  <select id="opcionLlamada">
+    <option value="">Seleccione...</option>
+    <option>Opción 0 - Información sobre vacunación</option>
+    <option>Opción 1 - Información medicina general</option>
+    <option>Opción 2 - Línea del paciente crónico</option>
+    <option>Opción 3 - Información en psicología</option>
+    <option>Opción 4 - Asesoría en nutrición</option>
+    <option>Opción 5 - Enfermedades varias</option>
+    <option>Opción 6 - Casos de violencia contra la mujer</option>
+    <option>Opción 7 - Atención a personas vulnerables</option>
+    <option>Opción 8 - Línea del donante</option>
+    <option>Opción 9 - Oncolínea ESSALUD</option>
+    <option>LLAMADAS MAL INTENCIONADAS</option>
+  </select>
 
-        dniInput.addEventListener('input', () => {
-            dniInput.value = dniInput.value.replace(/\D/g, '').slice(0, 8);
-            actualizarEstado();
-        });
+  <label>Número de teléfono 📱</label>
+  <input type="tel" id="telefono" placeholder="Ej. 987654321">
 
-        dniInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && dniInput.value.length === 8) {
-                buscarDNI();
-            }
-        });
+  <div class="section-title"><i class="fas fa-user"></i> Datos del Paciente</div>
+  <div class="flex flex-2">
+    <div>
+      <label>Tipo de documento 🆔</label>
+      <select id="tipoDoc">
+        <option value="DNI" selected>DNI</option>
+        <option>CE</option>
+        <option>PASS</option>
+        <option>CÉDULA</option>
+        <option>ANÓNIMO</option>
+      </select>
+    </div>
+    <div>
+      <label>N° Documento</label>
+      <input type="text" id="dni" maxlength="12" placeholder="Ingrese el número">
+    </div>
+  </div>
 
-        btnSearch.addEventListener('click', buscarDNI);
+  <label>Nombre completo 👤</label>
+  <input type="text" id="nombreCompleto" readonly>
 
-        function actualizarEstado() {
-            dniInput.classList.remove('valid', 'invalid');
-            if (dniInput.value.length === 8) {
-                dniInput.classList.add('valid');
-            } else if (dniInput.value.length > 0) {
-                dniInput.classList.add('invalid');
-            }
-        }
+  <div class="flex flex-2">
+    <div>
+      <label>Sexo</label>
+      <select id="sexo" readonly>
+        <option value="">Seleccione...</option>
+        <option>M</option>
+        <option>F</option>
+      </select>
+    </div>
+    <div>
+      <label>Fecha de nacimiento 📅</label>
+      <input type="date" id="fechaNac" readonly>
+    </div>
+  </div>
 
-        async function buscarDNI() {
-            const dni = dniInput.value.trim();
-            if (dni.length !== 8) {
-                dniInput.focus();
-                return;
-            }
+  <label>Edad actual 🧮</label>
+  <input type="text" id="edad" readonly>
 
-            messageError.style.display = 'none';
-            resultDiv.style.display = 'none';
+  <div class="section-title"><i class="fas fa-map-marker-alt"></i> Ubicación 🗺️</div>
+  <div class="flex flex-3">
+    <div>
+      <label>Departamento</label>
+      <select id="departamento">
+        <option value="">Seleccione...</option>
+        <option>Lima</option>
+        <option>Cusco</option>
+        <option>Arequipa</option>
+      </select>
+    </div>
+    <div>
+      <label>Provincia</label>
+      <select id="provincia">
+        <option value="">Seleccione...</option>
+      </select>
+    </div>
+    <div>
+      <label>Distrito</label>
+      <select id="distrito">
+        <option value="">Seleccione...</option>
+      </select>
+    </div>
+  </div>
 
-            btnSearch.disabled = true;
-            btnSearch.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+  <label>Fecha y hora de término ⏰</label>
+  <input type="text" id="fechaTermino" readonly>
 
-            try {
-                const url = `http://172.20.60.152:8000/buscar/${dni}`;
-                const response = await fetch(url, {
-                    method: 'GET',
-                    mode: 'cors',
-                    credentials: 'omit'
-                });
+  <div class="flex" style="gap:10px; margin-top:20px;">
+    <button id="btnGuardar"><i class="fas fa-save"></i> Guardar Registro</button>
+    <button id="btnLimpiar"><i class="fas fa-eraser"></i> Limpiar Todo</button>
+  </div>
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
+</div>
+</div>
 
-                const data = await response.json();
+<script>
+// ---------- FECHA DE INICIO ----------
+const fechaInicio = document.getElementById('fechaInicio');
+const fechaTermino = document.getElementById('fechaTermino');
+const estado = document.getElementById('estadoConexion');
+const nombreCompleto = document.getElementById('nombreCompleto');
+fechaInicio.value = formatoFecha(new Date());
+function formatoFecha(f){
+  const d = String(f.getDate()).padStart(2,'0');
+  const m = String(f.getMonth()+1).padStart(2,'0');
+  const y = f.getFullYear();
+  const h = String(f.getHours()).padStart(2,'0');
+  const min = String(f.getMinutes()).padStart(2,'0');
+  const s = String(f.getSeconds()).padStart(2,'0');
+  return `${d}_${m}_${y} ${h}:${min}:${s}`;
+}
 
-                document.getElementById('res-dni').textContent = data.DNI || data.dni || dni;
-                document.getElementById('res-nombre').textContent = 
-                    data.NOMBRE_COMPLETO || data.nombre_completo || '[Sin nombre]';
-                document.getElementById('res-fechanac').textContent = 
-                    data.FECHA_NAC || data.fecha_nacimiento || '—';
-                document.getElementById('res-sexo').textContent = 
-                    data.SEXO || data.sexo || '—';
+// ---------- PERSONAL PERMANENTE ----------
+const personalSelect = document.getElementById('personal');
+const profesionSelect = document.getElementById('profesion');
 
-                resultDiv.style.display = 'block';
+// Vincular nombres con profesión
+const personalLista = {
+  "Juan": "Médico",
+  "Pedro": "Enfermero",
+  "Carlos": "Médico"
+};
 
-            } catch (err) {
-                messageError.style.display = 'block';
-            } finally {
-                btnSearch.disabled = false;
-                btnSearch.innerHTML = '<i class="fas fa-search"></i> Buscar DNI';
-            }
-        }
+// Al cargar la página, verificar si ya hay un usuario guardado
+window.addEventListener('load', () => {
+  const usuarioGuardado = localStorage.getItem('usuarioActivo');
+  if(usuarioGuardado){
+    personalSelect.value = usuarioGuardado;
+    profesionSelect.value = personalLista[usuarioGuardado] || '';
+    personalSelect.disabled = true; // bloquear selección
+    profesionSelect.disabled = true;
+  }
+});
 
-        function copiar(idElemento) {
-            const elemento = document.getElementById(idElemento);
-            const texto = elemento.innerText || elemento.textContent;
+// Al seleccionar un nombre, guardar en localStorage
+personalSelect.addEventListener('change', () => {
+  const nombre = personalSelect.value;
+  if(nombre){
+    profesionSelect.value = personalLista[nombre] || '';
+    localStorage.setItem('usuarioActivo', nombre);
+    personalSelect.disabled = true;
+    profesionSelect.disabled = true;
+  }
+});
 
-            if (!texto || texto === '—') return;
+// Botón "Cerrar sesión"
+const btnCerrarSesion = document.createElement('button');
+btnCerrarSesion.textContent = "Cerrar sesión";
+btnCerrarSesion.style.marginLeft = "10px";
+btnCerrarSesion.style.padding = "8px 12px";
+btnCerrarSesion.style.borderRadius = "10px";
+btnCerrarSesion.style.background = "#cc0000";
+btnCerrarSesion.style.color = "#fff";
+btnCerrarSesion.style.border = "none";
+btnCerrarSesion.style.cursor = "pointer";
+document.querySelector('.container').prepend(btnCerrarSesion);
 
-            const textarea = document.createElement('textarea');
-            textarea.value = texto;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
+btnCerrarSesion.addEventListener('click', () => {
+  localStorage.removeItem('usuarioActivo');
+  personalSelect.disabled = false;
+  profesionSelect.disabled = false;
+  personalSelect.value = "";
+  profesionSelect.value = "";
+});
 
-            const btn = event.target.closest('.copy-btn');
-            const icono = btn.querySelector('i');
-            const originalHTML = icono.outerHTML;
+// ---------- BÚSQUEDA AUTOMÁTICA POR DNI ----------
+document.getElementById('dni').addEventListener('input', async e => {
+  const dni = e.target.value.trim();
+  if(dni.length >= 8) await buscarDNI(dni);
+});
 
-            icono.className = 'fas fa-check';
-            btn.classList.add('copied');
+async function buscarDNI(dni){
+  const urls = [`http://172.20.60.152:8000/buscar/${dni}`];
+  let data = null;
+  for(const url of urls){
+    try{
+      const res = await fetch(url);
+      if(res.ok){
+        data = await res.json();
+        estado.textContent = `✅ Conectado: ${url}`;
+        break;
+      }
+    }catch(e){}
+  }
 
-            setTimeout(() => {
-                icono.outerHTML = originalHTML;
-                btn.classList.remove('copied');
-            }, 1500);
-        }
-    </script>
+  if(data && (data.DNI || data.dni)){
+    nombreCompleto.value = data.NOMBRE_COMPLETO || data.nombre_completo || '';
+    nombreCompleto.style.background = '#d0f2e0';
+    document.getElementById('sexo').value = data.SEXO || data.sexo || '';
+    let fechaServer = data.FECHA_NAC || data.fecha_nacimiento || '';
+    if(fechaServer){
+      let parts = fechaServer.split(/[-/_]/);
+      if(parts.length===3){
+        let day = parts[0].padStart(2,'0');
+        let month = parts[1].padStart(2,'0');
+        let year = parts[2];
+        document.getElementById('fechaNac').value = `${year}-${month}-${day}`;
+      }
+    }
+    calcularEdad();
+  } else {
+    estado.textContent = '⚠️ No se encontró el DNI. Complete los datos manualmente.';
+    nombreCompleto.value='';
+    nombreCompleto.style.background='#f8d7da';
+    document.getElementById('nombreCompleto').removeAttribute('readonly');
+    document.getElementById('fechaNac').removeAttribute('readonly');
+    document.getElementById('sexo').removeAttribute('readonly');
+  }
+}
+
+// ---------- CALCULAR EDAD ----------
+document.getElementById('fechaNac').addEventListener('change', calcularEdad);
+function calcularEdad(){
+  const fechaNac = new Date(document.getElementById('fechaNac').value);
+  if(isNaN(fechaNac)) return;
+  const hoy = new Date();
+  let años = hoy.getFullYear() - fechaNac.getFullYear();
+  let meses = hoy.getMonth() - fechaNac.getMonth();
+  let dias = hoy.getDate() - fechaNac.getDate();
+  if(dias<0){ meses--; const mesAnt = new Date(hoy.getFullYear(), hoy.getMonth(),0); dias+=mesAnt.getDate();}
+  if(meses<0){años--;meses+=12;}
+  document.getElementById('edad').value = `${años} años, ${meses} meses, ${dias} días`;
+}
+
+// ---------- GUARDAR REGISTRO ----------
+document.getElementById('btnGuardar').addEventListener('click',()=>{
+  fechaTermino.value = formatoFecha(new Date());
+  alert('✅ Registro guardado correctamente.');
+});
+
+// ---------- LIMPIAR TODO ----------
+document.getElementById('btnLimpiar').addEventListener('click',()=>{
+  document.querySelectorAll('input').forEach(i=>i.value='');
+  document.querySelectorAll('select').forEach(s=>{ s.selectedIndex = 0; });
+  nombreCompleto.style.background='#fff';
+  estado.textContent='Buscando conexión con el servidor...';
+});
+
+// ---------- UBICACIÓN CONDICIONAL ----------
+const provincias = {
+  Lima:['Lima','Barranca','Canta'],
+  Cusco:['Cusco','Urubamba','Sicuani'],
+  Arequipa:['Arequipa','Camana','Caylloma']
+};
+const distritos = {
+  Lima:{Lima:['Miraflores','San Isidro'],Barranca:['Paramonga','Supe'],Canta:['Canta','San Miguel']},
+  Cusco:{Cusco:['Wanchaq','San Sebastián'],Urubamba:['Ollantaytambo'],Sicuani:['Sicuani']},
+  Arequipa:{Arequipa:['Cayma','Yanahuara'],Camana:['Camaná','Ocoña'],Caylloma:['Chivay','Cabanaconde']}
+};
+const deptoSel=document.getElementById('departamento');
+const provSel=document.getElementById('provincia');
+const distSel=document.getElementById('distrito');
+
+deptoSel.addEventListener('change',()=>{
+  provSel.innerHTML='<option value="">Seleccione...</option>';
+  distSel.innerHTML='<option value="">Seleccione...</option>';
+  const provs=provincias[deptoSel.value]||[];
+  provs.forEach(p=>{let opt=document.createElement('option');opt.textContent=p;provSel.appendChild(opt);});
+});
+provSel.addEventListener('change',()=>{
+  distSel.innerHTML='<option value="">Seleccione...</option>';
+  const dists=(distritos[deptoSel.value]||{})[provSel.value]||[];
+  dists.forEach(d=>{let opt=document.createElement('option');opt.textContent=d;distSel.appendChild(opt);});
+});
+</script>
+
 </body>
 </html>
