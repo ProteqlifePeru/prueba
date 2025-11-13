@@ -29,15 +29,16 @@ body {
 }
 
 .container {
-  width:95%;
-  max-width:1300px;
-  margin:20px;
+  width: 80%;           /* reducido para que no se vea gigante */
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
 }
 
 h1 {
   text-align:center;
   color: var(--primary);
-  font-size:36px;
+  font-size:28px;
   font-weight:700;
   margin-bottom:30px;
   text-shadow:1px 1px 2px rgba(0,0,0,0.1);
@@ -47,7 +48,7 @@ h1 {
   background: var(--card-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding:25px 30px;
+  padding:20px 25px;
   margin-bottom:25px;
   transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -56,7 +57,7 @@ h1 {
 .section-title {
   margin-top:20px;
   margin-bottom:10px;
-  font-size:22px;
+  font-size:20px;
   font-weight:600;
   color: var(--primary);
   border-left:5px solid var(--primary);
@@ -64,14 +65,14 @@ h1 {
   display:flex; align-items:center; gap:8px;
 }
 
-label {display:block; margin-top:12px; font-weight:500; font-size:15px;}
+label {display:block; margin-top:12px; font-weight:500; font-size:14px;}
 
 input, select {
   width:100%;
-  padding:12px 14px;
+  padding:10px 12px;
   border-radius:12px;
   border:1px solid #ccc;
-  font-size:15px;
+  font-size:14px;
   transition:0.3s;
 }
 input:focus, select:focus {
@@ -82,13 +83,13 @@ input:focus, select:focus {
 input[readonly], select[readonly] {background:#f0f0f0;}
 
 #nombreCompleto {
-  font-size:26px;
+  font-size:20px;
   font-weight:700;
   color:#000;
   text-align:center;
   border:2px solid #ccc;
   border-radius:14px;
-  padding:12px;
+  padding:10px;
   transition:0.3s;
 }
 
@@ -97,12 +98,12 @@ input[readonly], select[readonly] {background:#f0f0f0;}
 .flex-3 > div {min-width:150px;}
 
 button {
-  padding:14px;
+  padding:12px;
   background: var(--secondary);
   color:white;
   border:none;
   border-radius:14px;
-  font-size:16px;
+  font-size:15px;
   font-weight:600;
   cursor:pointer;
   transition:0.3s;
@@ -125,7 +126,19 @@ button:hover {
   text-align:center;
 }
 
-@media(max-width:1000px){ h1{font-size:30px;} #nombreCompleto{font-size:22px;} }
+.alert {
+  padding: 10px 15px;
+  border-radius:12px;
+  margin:10px 0;
+  font-weight:600;
+  text-align:center;
+  display:none;
+}
+
+.alert.error {background:#f8d7da; color:#721c24;}
+.alert.success {background:#d0f2e0; color:#155724;}
+
+@media(max-width:1000px){ h1{font-size:26px;} #nombreCompleto{font-size:18px;} }
 @media(max-width:600px){ .flex{flex-direction:column;} }
 </style>
 </head>
@@ -136,6 +149,8 @@ button:hover {
 
 <div class="card">
   <div class="info-bar" id="estadoConexion">Buscando conexión con el servidor... 🌐</div>
+  <div class="alert" id="alerta"></div>
+  <div id="contadorDuracion"></div>
 
   <label>Fecha y hora de inicio ⏱️</label>
   <input type="text" id="fechaInicio" readonly>
@@ -260,7 +275,9 @@ const fechaInicio = document.getElementById('fechaInicio');
 const fechaTermino = document.getElementById('fechaTermino');
 const estado = document.getElementById('estadoConexion');
 const nombreCompleto = document.getElementById('nombreCompleto');
+const alerta = document.getElementById('alerta');
 fechaInicio.value = formatoFecha(new Date());
+
 function formatoFecha(f){
   const d = String(f.getDate()).padStart(2,'0');
   const m = String(f.getMonth()+1).padStart(2,'0');
@@ -271,29 +288,36 @@ function formatoFecha(f){
   return `${d}_${m}_${y} ${h}:${min}:${s}`;
 }
 
+// ---------- CONTADOR DE DURACIÓN ----------
+let inicioLlamada = new Date();
+const contador = document.getElementById('contadorDuracion');
+
+function actualizarContador(){
+  const ahora = new Date();
+  let diff = Math.floor((ahora - inicioLlamada) / 1000);
+  const h = String(Math.floor(diff / 3600)).padStart(2,'0');
+  diff %= 3600;
+  const m = String(Math.floor(diff / 60)).padStart(2,'0');
+  const s = String(diff % 60).padStart(2,'0');
+  contador.textContent = `⏱️ Duración de la llamada: ${h}:${m}:${s}`;
+}
+setInterval(actualizarContador,1000);
+
 // ---------- PERSONAL PERMANENTE ----------
 const personalSelect = document.getElementById('personal');
 const profesionSelect = document.getElementById('profesion');
+const personalLista = {"Juan":"Médico","Pedro":"Enfermero","Carlos":"Médico"};
 
-// Vincular nombres con profesión
-const personalLista = {
-  "Juan": "Médico",
-  "Pedro": "Enfermero",
-  "Carlos": "Médico"
-};
-
-// Al cargar la página, verificar si ya hay un usuario guardado
 window.addEventListener('load', () => {
   const usuarioGuardado = localStorage.getItem('usuarioActivo');
   if(usuarioGuardado){
     personalSelect.value = usuarioGuardado;
     profesionSelect.value = personalLista[usuarioGuardado] || '';
-    personalSelect.disabled = true; // bloquear selección
+    personalSelect.disabled = true;
     profesionSelect.disabled = true;
   }
 });
 
-// Al seleccionar un nombre, guardar en localStorage
 personalSelect.addEventListener('change', () => {
   const nombre = personalSelect.value;
   if(nombre){
@@ -304,7 +328,6 @@ personalSelect.addEventListener('change', () => {
   }
 });
 
-// Botón "Cerrar sesión"
 const btnCerrarSesion = document.createElement('button');
 btnCerrarSesion.textContent = "Cerrar sesión";
 btnCerrarSesion.style.marginLeft = "10px";
@@ -322,6 +345,7 @@ btnCerrarSesion.addEventListener('click', () => {
   profesionSelect.disabled = false;
   personalSelect.value = "";
   profesionSelect.value = "";
+  inicioLlamada = new Date();
 });
 
 // ---------- BÚSQUEDA AUTOMÁTICA POR DNI ----------
@@ -383,10 +407,41 @@ function calcularEdad(){
   document.getElementById('edad').value = `${años} años, ${meses} meses, ${dias} días`;
 }
 
-// ---------- GUARDAR REGISTRO ----------
+// ---------- VALIDACIÓN Y GUARDAR REGISTRO ----------
 document.getElementById('btnGuardar').addEventListener('click',()=>{
+  alerta.style.display='none';
+  const campos = [
+    {id:'profesion', nombre:'Profesión'},
+    {id:'personal', nombre:'Personal'},
+    {id:'opcionLlamada', nombre:'Opción de llamada'},
+    {id:'telefono', nombre:'Teléfono'},
+    {id:'tipoDoc', nombre:'Tipo de documento'},
+    {id:'dni', nombre:'Número de documento'},
+    {id:'nombreCompleto', nombre:'Nombre completo'},
+    {id:'sexo', nombre:'Sexo'},
+    {id:'fechaNac', nombre:'Fecha de nacimiento'},
+    {id:'departamento', nombre:'Departamento'},
+    {id:'provincia', nombre:'Provincia'},
+    {id:'distrito', nombre:'Distrito'}
+  ];
+
+  let errores = [];
+  campos.forEach(c=>{
+    const val = document.getElementById(c.id).value.trim();
+    if(!val) errores.push(c.nombre);
+  });
+
+  if(errores.length>0){
+    alerta.textContent = '❌ Complete: ' + errores.join(', ');
+    alerta.className = 'alert error';
+    alerta.style.display='block';
+    return;
+  }
+
   fechaTermino.value = formatoFecha(new Date());
-  alert('✅ Registro guardado correctamente.');
+  alerta.textContent = '✅ Registro guardado correctamente.';
+  alerta.className = 'alert success';
+  alerta.style.display='block';
 });
 
 // ---------- LIMPIAR TODO ----------
@@ -395,6 +450,8 @@ document.getElementById('btnLimpiar').addEventListener('click',()=>{
   document.querySelectorAll('select').forEach(s=>{ s.selectedIndex = 0; });
   nombreCompleto.style.background='#fff';
   estado.textContent='Buscando conexión con el servidor...';
+  inicioLlamada = new Date();
+  alerta.style.display='none';
 });
 
 // ---------- UBICACIÓN CONDICIONAL ----------
