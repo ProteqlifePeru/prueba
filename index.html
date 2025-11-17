@@ -4,10 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>📞 Dashboard Llamadas 107 - ESSALUD</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://kit.fontawesome.com/a2d04b6a6a.js" crossorigin="anonymous"></script>
-
 <style>
 :root {
   --primary: #0066cc;
@@ -19,7 +17,6 @@
   --radius: 16px;
   --shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
-
 * {box-sizing:border-box;}
 body {
   font-family:'Poppins',sans-serif;
@@ -27,14 +24,12 @@ body {
   background: var(--bg);
   display:flex; justify-content:center; min-height:100vh;
 }
-
 .container {
-  width: 80%;           /* reducido para que no se vea gigante */
+  width: 80%;
   max-width: 1000px;
   margin: 40px auto;
   padding: 20px;
 }
-
 h1 {
   text-align:center;
   color: var(--primary);
@@ -43,7 +38,6 @@ h1 {
   margin-bottom:30px;
   text-shadow:1px 1px 2px rgba(0,0,0,0.1);
 }
-
 .card {
   background: var(--card-bg);
   border-radius: var(--radius);
@@ -53,7 +47,6 @@ h1 {
   transition: transform 0.3s, box-shadow 0.3s;
 }
 .card:hover {transform: translateY(-5px); box-shadow:0 20px 50px rgba(0,0,0,0.25);}
-
 .section-title {
   margin-top:20px;
   margin-bottom:10px;
@@ -64,9 +57,7 @@ h1 {
   padding-left:10px;
   display:flex; align-items:center; gap:8px;
 }
-
 label {display:block; margin-top:12px; font-weight:500; font-size:14px;}
-
 input, select {
   width:100%;
   padding:10px 12px;
@@ -81,7 +72,6 @@ input:focus, select:focus {
   background: var(--accent);
 }
 input[readonly], select[readonly] {background:#f0f0f0;}
-
 #nombreCompleto {
   font-size:20px;
   font-weight:700;
@@ -92,11 +82,9 @@ input[readonly], select[readonly] {background:#f0f0f0;}
   padding:10px;
   transition:0.3s;
 }
-
 .flex {display:flex; gap:15px; flex-wrap:wrap;}
 .flex-2 > div, .flex-3 > div {flex:1;}
 .flex-3 > div {min-width:150px;}
-
 button {
   padding:12px;
   background: var(--secondary);
@@ -112,172 +100,242 @@ button:hover {
   transform: translateY(-2px);
   box-shadow:0 5px 20px rgba(0,0,0,0.2);
 }
-#btnLimpiar {background:#cc0000;}
-#btnLimpiar:hover {background:#990000;}
-
-.info-bar {
-  background: #b0dbff;
-  color: var(--primary);
-  padding:10px 12px;
-  border-radius:12px;
-  font-size:16px;
-  font-weight:600;
-  margin-bottom:15px;
-  text-align:center;
+#btnLimpiar, #btnCerrarSesion {background:#cc0000;}
+#btnLimpiar:hover, #btnCerrarSesion:hover {background:#990000;}
+#mensajeDNI {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #d0e7ff;
+  color: #0066cc;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  margin-top: 5px;
+  display: none;
+  text-align: center;
+  border: 1px solid #b0dbff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  z-index: 10;
 }
-
-.alert {
-  padding: 10px 15px;
-  border-radius:12px;
-  margin:10px 0;
-  font-weight:600;
-  text-align:center;
+#mensajeDNI.error {
+  background: #f8d7da;
+  color: #721c24;
+  border-color: #f5c6cb;
+}
+#mensajeDNI.success {
+  background: #d0f2e0;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+#motivoOtro {
+  width:100%; padding:10px 12px; border-radius:12px;
+  margin-top:8px; font-size:14px;
   display:none;
+  border:1px solid #ff9800; background:#fff8e1; color:#e65100;
+  box-shadow:0 0 6px rgba(255,152,0,0.2);
 }
-
-.alert.error {background:#f8d7da; color:#721c24;}
-.alert.success {background:#d0f2e0; color:#155724;}
-
-@media(max-width:1000px){ h1{font-size:26px;} #nombreCompleto{font-size:18px;} }
-@media(max-width:600px){ .flex{flex-direction:column;} }
 </style>
 </head>
 <body>
-
 <div class="container">
-<h1><i class="fas fa-phone-volume"></i> Dashboard Llamadas 107 - ESSALUD</h1>
+  <button id="btnCerrarSesion" style="margin-bottom:15px; display:none;">
+    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+  </button>
 
-<div class="card">
-  <div class="info-bar" id="estadoConexion">Buscando conexión con el servidor... 🌐</div>
-  <div class="alert" id="alerta"></div>
-  <div id="contadorDuracion"></div>
+  <h1><i class="fas fa-phone-volume"></i> Dashboard Llamadas 107 - ESSALUD</h1>
+  <div class="card">
+    <div id="contadorDuracion"></div>
 
-  <label>Fecha y hora de inicio ⏱️</label>
-  <input type="text" id="fechaInicio" readonly>
+    <div class="section-title"><i class="fas fa-clock"></i> Fecha y hora de inicio</div>
+    <input type="text" id="fechaInicio" readonly style="
+      width:100%; padding:10px 12px; border-radius:12px;
+      background:#f0f0f0; color:#333; font-weight:500;
+      text-align:center; letter-spacing:0.5px;
+    ">
 
-  <div class="section-title"><i class="fas fa-user-md"></i> Datos del Profesional</div>
-  <div class="flex flex-2">
-    <div>
-      <label>Profesión</label>
-      <select id="profesion">
-        <option value="">Seleccione...</option>
-      </select>
+    <div class="section-title"><i class="fas fa-user-md"></i> Datos del Profesional</div>
+    <div class="flex flex-2">
+      <div>
+        <label>Profesión</label>
+        <input type="text" id="profesion" readonly style="background:#f0f0f0; color:#333; font-weight:500;">
+      </div>
+      <div>
+        <label>Personal</label>
+        <select id="personal">
+          <option value="">Seleccione...</option>
+        </select>
+      </div>
     </div>
-    <div>
-      <label>Personal</label>
-      <select id="personal">
-        <option value="">Seleccione...</option>
-        <option>Juan</option>
-        <option>Pedro</option>
-        <option>Carlos</option>
-      </select>
+
+    <div class="section-title"><i class="fas fa-phone"></i> Datos de la Llamada</div>
+    <label>Opciones de llamada 📞</label>
+    <select id="opcionLlamada">
+      <option value="">Seleccione...</option>
+      <option>Opción 0 - Información sobre vacunación</option>
+      <option>Opción 1 - Información medicina general</option>
+      <option>Opción 2 - Línea del paciente crónico</option>
+      <option>Opción 3 - Información en psicología</option>
+      <option>Opción 4 - Asesoría en nutrición</option>
+      <option>Opción 5 - Enfermedades varias</option>
+      <option>Opción 6 - Casos de violencia contra la mujer</option>
+      <option>Opción 7 - Atención a personas vulnerables</option>
+      <option>Opción 8 - Línea del donante</option>
+      <option>Opción 9 - Oncolínea ESSALUD</option>
+      <option>LLAMADAS MAL INTENCIONADAS</option>
+    </select>
+    <label>Número de teléfono 📱</label>
+    <input type="tel" id="telefono" placeholder="Ej. 987654321">
+
+    <div class="section-title"><i class="fas fa-sticky-note"></i> Motivo de la llamada</div>
+    <select id="motivoLlamada" style="width:100%; padding:10px 12px; border-radius:12px; border:1px solid #ccc; font-size:14px;">
+      <option value="">Seleccione el motivo...</option>
+      <option>ALTERACION DE LA COMPOSICION MASA CORPORAL</option>
+      <option>ALTERACIONES DE LA GLUCOSA</option>
+      <option>ALTERACIONES DE LA PIEL Y FANERAS</option>
+      <option>ALTERACIONES DE LA TIROIDES</option>
+      <option>ALTERACIONES DE LA VISIÓN</option>
+      <option>ALTERACIONES EN EL OÍDO</option>
+      <option>ALTERACIONES EN LA PIEL</option>
+      <option>MOLESTIAS URINARIAS</option>
+      <option>ANEMIA</option>
+      <option>AYUDA AL DIAGNOSTICO</option>
+      <option>CONSULTAS RELACIONADOS AL EMBARAZO</option>
+      <option>CRECIMIENTO Y DESARROLLO O NIÑO SANO</option>
+      <option>DEMENCIAS</option>
+      <option>DISCAPACIDAD</option>
+      <option>DISMINUCIÓN DE LA AGUDEZA VISUAL</option>
+      <option>DOLOR DE CABEZA</option>
+      <option>DOLOR LUMBAR</option>
+      <option>FIEBRE</option>
+      <option>HIPOACUSIA</option>
+      <option>INFORMACIÓN SOBRE TEMAS ADMINISTRATIVOS</option>
+      <option>MORDEDURAS O PICADURAS DE ANIMALES</option>
+      <option>OTROS PROBLEMAS CARDIOVASCULARES</option>
+      <option>P. RELACIONADOS CON ALTERACIONES PSICOLOGICAS</option>
+      <option>P. RELACIONADOS CON FACTORES PROTECTORES Y/O DE RIESGOS</option>
+      <option>P. RELACIONADOS CON VIOLENCIA</option>
+      <option>PATOLOGIAS MUSCULOESQUELETICAS</option>
+      <option>PLANIFICACION FAMILIAR</option>
+      <option>PRESENCIA DE CUERPO EXTRAÑO</option>
+      <option>PRESIÓN ARTERIAL DISMINUIDA (HIPOTENSIÓN)</option>
+      <option>PRESION ARTERIAL ELEVADA</option>
+      <option>PREVENCION Y PROMOCION EN SALUD</option>
+      <option>PROBLEMAS ODONTOLOGICOS</option>
+      <option>REACCIONES ALÉRGICAS LEVES</option>
+      <option>SECRECION CONJUNTIVAL</option>
+      <option>SINTOMAS GASTROINTESTINALES</option>
+      <option>SINTOMAS RESPIRATORIOS</option>
+      <option>TRASTORNOS DEL AFECTO</option>
+      <option>TRAUMATISMO SIN PERDIDA DE MOVILIDAD</option>
+      <option>VACUNACIÓN</option>
+      <option>VERTIGO O MAREOS SIN TRAUMA PREVIO</option>
+      <option>OTROS</option>
+    </select>
+    <input type="text" id="motivoOtro" placeholder="Especifique el motivo..." />
+
+    <div class="section-title"><i class="fas fa-user"></i> Datos del Paciente</div>
+    <div class="flex flex-2">
+      <div>
+        <label>Tipo de documento 🆔</label>
+        <select id="tipoDoc">
+          <option value="DNI" selected>DNI</option>
+          <option>CE</option>
+          <option>PASS</option>
+          <option>CÉDULA</option>
+          <option>ANÓNIMO</option>
+        </select>
+      </div>
+      <div style="position:relative; width:100%;">
+        <label>N° Documento</label>
+        <input type="text" id="dni" maxlength="12" placeholder="Ingrese el número">
+        <div id="mensajeDNI">
+          <i class="fas fa-info-circle" style="margin-right:5px;"></i>
+          <span id="mensajeDNITexto"></span>
+        </div>
+      </div>
+    </div>
+    <label>Nombre completo 👤</label>
+    <input type="text" id="nombreCompleto" readonly>
+    <div class="flex flex-2">
+      <div>
+        <label>Sexo</label>
+        <select id="sexo" readonly>
+          <option value="">Seleccione...</option>
+          <option>M</option>
+          <option>F</option>
+        </select>
+      </div>
+      <div>
+        <label>Fecha de nacimiento 📅</label>
+        <input type="date" id="fechaNac" readonly>
+      </div>
+    </div>
+    <label>Edad actual 🧮</label>
+    <input type="text" id="edad" readonly>
+
+    <div class="section-title"><i class="fas fa-map-marker-alt"></i> Ubicación 🗺️</div>
+    <div class="flex flex-3">
+      <div>
+        <label>Departamento</label>
+        <select id="departamento">
+          <option value="">Seleccione...</option>
+        </select>
+      </div>
+      <div>
+        <label>Provincia</label>
+        <select id="provincia">
+          <option value="">Seleccione...</option>
+        </select>
+      </div>
+      <div>
+        <label>Distrito</label>
+        <select id="distrito">
+          <option value="">Seleccione...</option>
+        </select>
+      </div>
+    </div>
+
+    <label>Fecha y hora de término ⏰</label>
+    <input type="text" id="fechaTermino" readonly>
+    <div class="flex" style="gap:10px; margin-top:20px;">
+      <button id="btnGuardar"><i class="fas fa-save"></i> Guardar Registro</button>
+      <button id="btnLimpiar"><i class="fas fa-eraser"></i> Limpiar Todo</button>
     </div>
   </div>
-
-  <div class="section-title"><i class="fas fa-phone"></i> Datos de la Llamada</div>
-  <label>Opciones de llamada 📞</label>
-  <select id="opcionLlamada">
-    <option value="">Seleccione...</option>
-    <option>Opción 0 - Información sobre vacunación</option>
-    <option>Opción 1 - Información medicina general</option>
-    <option>Opción 2 - Línea del paciente crónico</option>
-    <option>Opción 3 - Información en psicología</option>
-    <option>Opción 4 - Asesoría en nutrición</option>
-    <option>Opción 5 - Enfermedades varias</option>
-    <option>Opción 6 - Casos de violencia contra la mujer</option>
-    <option>Opción 7 - Atención a personas vulnerables</option>
-    <option>Opción 8 - Línea del donante</option>
-    <option>Opción 9 - Oncolínea ESSALUD</option>
-    <option>LLAMADAS MAL INTENCIONADAS</option>
-  </select>
-
-  <label>Número de teléfono 📱</label>
-  <input type="tel" id="telefono" placeholder="Ej. 987654321">
-
-  <div class="section-title"><i class="fas fa-user"></i> Datos del Paciente</div>
-  <div class="flex flex-2">
-    <div>
-      <label>Tipo de documento 🆔</label>
-      <select id="tipoDoc">
-        <option value="DNI" selected>DNI</option>
-        <option>CE</option>
-        <option>PASS</option>
-        <option>CÉDULA</option>
-        <option>ANÓNIMO</option>
-      </select>
-    </div>
-    <div>
-      <label>N° Documento</label>
-      <input type="text" id="dni" maxlength="12" placeholder="Ingrese el número">
-    </div>
-  </div>
-
-  <label>Nombre completo 👤</label>
-  <input type="text" id="nombreCompleto" readonly>
-
-  <div class="flex flex-2">
-    <div>
-      <label>Sexo</label>
-      <select id="sexo" readonly>
-        <option value="">Seleccione...</option>
-        <option>M</option>
-        <option>F</option>
-      </select>
-    </div>
-    <div>
-      <label>Fecha de nacimiento 📅</label>
-      <input type="date" id="fechaNac" readonly>
-    </div>
-  </div>
-
-  <label>Edad actual 🧮</label>
-  <input type="text" id="edad" readonly>
-
-  <div class="section-title"><i class="fas fa-map-marker-alt"></i> Ubicación 🗺️</div>
-  <div class="flex flex-3">
-    <div>
-      <label>Departamento</label>
-      <select id="departamento">
-        <option value="">Seleccione...</option>
-        <option>Lima</option>
-        <option>Cusco</option>
-        <option>Arequipa</option>
-      </select>
-    </div>
-    <div>
-      <label>Provincia</label>
-      <select id="provincia">
-        <option value="">Seleccione...</option>
-      </select>
-    </div>
-    <div>
-      <label>Distrito</label>
-      <select id="distrito">
-        <option value="">Seleccione...</option>
-      </select>
-    </div>
-  </div>
-
-  <label>Fecha y hora de término ⏰</label>
-  <input type="text" id="fechaTermino" readonly>
-
-  <div class="flex" style="gap:10px; margin-top:20px;">
-    <button id="btnGuardar"><i class="fas fa-save"></i> Guardar Registro</button>
-    <button id="btnLimpiar"><i class="fas fa-eraser"></i> Limpiar Todo</button>
-  </div>
-
-</div>
 </div>
 
 <script>
-// ---------- FECHA DE INICIO ----------
-const fechaInicio = document.getElementById('fechaInicio');
-const fechaTermino = document.getElementById('fechaTermino');
-const estado = document.getElementById('estadoConexion');
-const nombreCompleto = document.getElementById('nombreCompleto');
-const alerta = document.getElementById('alerta');
-fechaInicio.value = formatoFecha(new Date());
+// ---------- Referencias ----------
+const $ = s => document.querySelector(s);
+const el = {
+  dni: $('#dni'),
+  nombreCompleto: $('#nombreCompleto'),
+  sexo: $('#sexo'),
+  fechaNac: $('#fechaNac'),
+  edad: $('#edad'),
+  departamento: $('#departamento'),
+  provincia: $('#provincia'),
+  distrito: $('#distrito'),
+  profesion: $('#profesion'),
+  personal: $('#personal'),
+  opcionLlamada: $('#opcionLlamada'),
+  telefono: $('#telefono'),
+  tipoDoc: $('#tipoDoc'),
+  motivoLlamada: $('#motivoLlamada'),
+  motivoOtro: $('#motivoOtro'),
+  btnGuardar: $('#btnGuardar'),
+  btnLimpiar: $('#btnLimpiar'),
+  btnCerrarSesion: $('#btnCerrarSesion'),
+  mensajeDNI: $('#mensajeDNI'),
+  mensajeDNITexto: $('#mensajeDNITexto'),
+  contadorDuracion: $('#contadorDuracion'),
+  fechaInicio: $('#fechaInicio'),
+  fechaTermino: $('#fechaTermino')
+};
 
+// ---------- Fecha de inicio ----------
 function formatoFecha(f){
   const d = String(f.getDate()).padStart(2,'0');
   const m = String(f.getMonth()+1).padStart(2,'0');
@@ -288,10 +346,12 @@ function formatoFecha(f){
   return `${d}_${m}_${y} ${h}:${min}:${s}`;
 }
 
-// ---------- CONTADOR DE DURACIÓN ----------
-let inicioLlamada = new Date();
-const contador = document.getElementById('contadorDuracion');
+if (el.fechaInicio) {
+  el.fechaInicio.value = formatoFecha(new Date());
+}
 
+// ---------- Contador ----------
+let inicioLlamada = new Date();
 function actualizarContador(){
   const ahora = new Date();
   let diff = Math.floor((ahora - inicioLlamada) / 1000);
@@ -299,61 +359,134 @@ function actualizarContador(){
   diff %= 3600;
   const m = String(Math.floor(diff / 60)).padStart(2,'0');
   const s = String(diff % 60).padStart(2,'0');
-  contador.textContent = `⏱️ Duración de la llamada: ${h}:${m}:${s}`;
+  el.contadorDuracion.textContent = `⏱️ Duración de la llamada: ${h}:${m}:${s}`;
 }
-setInterval(actualizarContador,1000);
+setInterval(actualizarContador, 1000);
 
-// ---------- PERSONAL PERMANENTE ----------
-const personalSelect = document.getElementById('personal');
-const profesionSelect = document.getElementById('profesion');
-const personalLista = {"Juan":"Médico","Pedro":"Enfermero","Carlos":"Médico"};
+// ---------- Personal → Profesión ----------
+const personalLista = {
+  "ALBITRES VIDAL RODRIGO": "PSICOLOGÍA",
+  "ALMONACIN MALLQUI JASMIN": "PSICOLOGÍA",
+  "ALVARON PEREZ GREETEL VANESSA": "ENFERMERÍA",
+  "ANCO SOLORZANO CINDY": "ENFERMERÍA",
+  "ARANDA MARENGO MARÍA ISABEL": "ENFERMERÍA",
+  "ARROYO JARA ALESSANDRA": "NUTRICIONISTA",
+  "AYALA HUAÑA EDITH": "OBSTETRICIA",
+  "BENITES MORENO HENRY": "NUTRICIONISTA",
+  "BERNABE ORELLANO PAULA MARÍA": "ENFERMERÍA",
+  "CALDERON CAHUANTICO LUCY MELISA": "NUTRICIONISTA",
+  "CARDENAS KRAPP ZARELA LUCIEN": "MEDICINA",
+  "CASTILLO ROMERO CARLA": "PSICOLOGÍA",
+  "CAYLLAHUA QUISPE YAKELIN": "PSICOLOGÍA",
+  "CUBAS JARA MILAGROS MALLENA": "MEDICINA",
+  "CUSTODIO SALAZAR LENIN RUBEN": "ENFERMERÍA",
+  "DEL CASTILLO BARRIENTOS MILAGROS DEL ROCIO": "PSICOLOGÍA",
+  "ECOS RAMOS FANNY LOURDES": "ENFERMERÍA",
+  "ESPINOZA SALCEDO NANCY": "OBSTETRICIA",
+  "FERNANDEZ HUARHUACHI YURINA": "MEDICINA",
+  "GALVEZ CALVO ALESSANDRA ISABEL INES": "OBSTETRICIA",
+  "GOMEZ MARIN ALICIA PATRICIA": "OBSTETRICIA",
+  "GUARDAMINO GUILLEN MARIELA DEYSI": "ENFERMERÍA",
+  "GUTARRA MENDEZ ARTURO ENRIQUE": "PSICOLOGÍA",
+  "HERQUINIO VEGA CARMEN ROCIO": "ENFERMERÍA",
+  "HINOSTROZA YARASCA EDER": "ENFERMERÍA",
+  "HORNA QUEVEDO GUILIANA": "PSICOLOGÍA",
+  "IGNACIO ESPINOZA KATHERINE": "OBSTETRICIA",
+  "LAPA PEREZ NURIA GENOVEVA": "ASISTENTE SOCIAL",
+  "LAVALLE LESCANO ELIANA": "OBSTETRICIA",
+  "LAZO MONTOYA YESSENIA": "NUTRICIONISTA",
+  "MENDOZA GIRALDO JESARELA JEZIEL": "OBSTETRICIA",
+  "MUÑOZ BARRIOS ANNGIE DEL ROSARIO": "ENFERMERÍA",
+  "OLIVARES MENDOZA ROSA INES": "MEDICINA",
+  "PAREDES CASTILLO LUBY EDITA": "OBSTETRICIA",
+  "RIVERA CORDOVA XIMENA CLAUDIA": "PSICOLOGÍA",
+  "ROBLES ALFARO RICARDO ALESSANDRO": "MEDICINA",
+  "SALAZAR CUEVA EVELYN": "NUTRICIONISTA",
+  "SALINAS BOGGIO RAM": "MEDICINA",
+  "SALVADOR CALZADA JESSICA": "ENFERMERÍA",
+  "VITE CELEDONIO MARIA": "ENFERMERÍA",
+  "YPANAQUÉ CELIS, CINTHYA LAURA": "OBSTETRICIA",
+  "ZEGARRA DE LAMA MAGALY REINELIA": "PSICOLOGÍA",
+  "ZUÑIGA SANCHEZ SANDRA": "PSICOLOGÍA"
+};
+
+Object.keys(personalLista).forEach(nombre => {
+  const opt = document.createElement('option');
+  opt.value = nombre;
+  opt.textContent = nombre;
+  el.personal.appendChild(opt);
+});
+
+el.personal.addEventListener('change', () => {
+  const nombre = el.personal.value;
+  el.profesion.value = personalLista[nombre] || '';
+  if (nombre && personalLista[nombre]) {
+    localStorage.setItem('usuarioActivo', nombre);
+    el.personal.disabled = true;
+    el.profesion.style.background = '#e7f1ff';
+    el.btnCerrarSesion.style.display = 'inline-block';
+  } else {
+    localStorage.removeItem('usuarioActivo');
+    el.profesion.value = '';
+    el.personal.disabled = false;
+    el.profesion.style.background = '#f0f0f0';
+    el.btnCerrarSesion.style.display = 'none';
+  }
+});
 
 window.addEventListener('load', () => {
-  const usuarioGuardado = localStorage.getItem('usuarioActivo');
-  if(usuarioGuardado){
-    personalSelect.value = usuarioGuardado;
-    profesionSelect.value = personalLista[usuarioGuardado] || '';
-    personalSelect.disabled = true;
-    profesionSelect.disabled = true;
+  const nombre = localStorage.getItem('usuarioActivo');
+  if (nombre && personalLista[nombre]) {
+    el.personal.value = nombre;
+    el.profesion.value = personalLista[nombre];
+    el.personal.disabled = true;
+    el.profesion.style.background = '#e7f1ff';
+    el.btnCerrarSesion.style.display = 'inline-block';
   }
 });
 
-personalSelect.addEventListener('change', () => {
-  const nombre = personalSelect.value;
-  if(nombre){
-    profesionSelect.value = personalLista[nombre] || '';
-    localStorage.setItem('usuarioActivo', nombre);
-    personalSelect.disabled = true;
-    profesionSelect.disabled = true;
-  }
-});
-
-const btnCerrarSesion = document.createElement('button');
-btnCerrarSesion.textContent = "Cerrar sesión";
-btnCerrarSesion.style.marginLeft = "10px";
-btnCerrarSesion.style.padding = "8px 12px";
-btnCerrarSesion.style.borderRadius = "10px";
-btnCerrarSesion.style.background = "#cc0000";
-btnCerrarSesion.style.color = "#fff";
-btnCerrarSesion.style.border = "none";
-btnCerrarSesion.style.cursor = "pointer";
-document.querySelector('.container').prepend(btnCerrarSesion);
-
-btnCerrarSesion.addEventListener('click', () => {
+el.btnCerrarSesion.addEventListener('click', () => {
   localStorage.removeItem('usuarioActivo');
-  personalSelect.disabled = false;
-  profesionSelect.disabled = false;
-  personalSelect.value = "";
-  profesionSelect.value = "";
+  el.personal.value = '';
+  el.profesion.value = '';
+  el.personal.disabled = false;
+  el.profesion.style.background = '#f0f0f0';
+  el.btnCerrarSesion.style.display = 'none';
   inicioLlamada = new Date();
 });
 
-// ---------- BÚSQUEDA AUTOMÁTICA POR DNI ----------
-document.getElementById('dni').addEventListener('input', async e => {
-  const dni = e.target.value.trim();
-  if(dni.length >= 8) await buscarDNI(dni);
+// ---------- Motivo de llamada condicional ----------
+el.motivoLlamada.addEventListener('change', () => {
+  if (el.motivoLlamada.value === 'OTROS') {
+    el.motivoOtro.style.display = 'block';
+    el.motivoOtro.focus();
+  } else {
+    el.motivoOtro.style.display = 'none';
+    el.motivoOtro.value = '';
+  }
 });
 
+// ---------- DNI con mensaje localizado ----------
+let debounceTimer;
+el.dni.addEventListener('input', e => {
+  const dni = e.target.value.trim();
+  clearTimeout(debounceTimer);
+  if (dni.length >= 8) {
+    debounceTimer = setTimeout(() => buscarDNI(dni), 500);
+  }
+});
+
+function mostrarMensajeDNI(texto, tipo = 'info') {
+  el.mensajeDNITexto.textContent = texto;
+  el.mensajeDNI.className = '';
+  el.mensajeDNI.classList.add(tipo);
+  el.mensajeDNI.style.display = 'block';
+  setTimeout(() => {
+    el.mensajeDNI.style.display = 'none';
+  }, 5000);
+}
+
+// ---------- API (SIN CAMBIOS) ----------
 async function buscarDNI(dni){
   const urls = [`http://172.20.60.152:8000/buscar/${dni}`];
   let data = null;
@@ -362,16 +495,15 @@ async function buscarDNI(dni){
       const res = await fetch(url);
       if(res.ok){
         data = await res.json();
-        estado.textContent = `✅ Conectado: ${url}`;
+        mostrarMensajeDNI(`✅ Conectado: ${url}`, 'success');
         break;
       }
     }catch(e){}
   }
-
   if(data && (data.DNI || data.dni)){
-    nombreCompleto.value = data.NOMBRE_COMPLETO || data.nombre_completo || '';
-    nombreCompleto.style.background = '#d0f2e0';
-    document.getElementById('sexo').value = data.SEXO || data.sexo || '';
+    el.nombreCompleto.value = data.NOMBRE_COMPLETO || data.nombre_completo || '';
+    el.nombreCompleto.style.background = '#d0f2e0';
+    el.sexo.value = data.SEXO || data.sexo || '';
     let fechaServer = data.FECHA_NAC || data.fecha_nacimiento || '';
     if(fechaServer){
       let parts = fechaServer.split(/[-/_]/);
@@ -379,24 +511,24 @@ async function buscarDNI(dni){
         let day = parts[0].padStart(2,'0');
         let month = parts[1].padStart(2,'0');
         let year = parts[2];
-        document.getElementById('fechaNac').value = `${year}-${month}-${day}`;
+        el.fechaNac.value = `${year}-${month}-${day}`;
       }
     }
     calcularEdad();
   } else {
-    estado.textContent = '⚠️ No se encontró el DNI. Complete los datos manualmente.';
-    nombreCompleto.value='';
-    nombreCompleto.style.background='#f8d7da';
-    document.getElementById('nombreCompleto').removeAttribute('readonly');
-    document.getElementById('fechaNac').removeAttribute('readonly');
-    document.getElementById('sexo').removeAttribute('readonly');
+    mostrarMensajeDNI('⚠️ No se encontró el DNI. Complete los datos manualmente.', 'error');
+    el.nombreCompleto.value = '';
+    el.nombreCompleto.style.background = '#f8d7da';
+    el.nombreCompleto.removeAttribute('readonly');
+    el.fechaNac.removeAttribute('readonly');
+    el.sexo.removeAttribute('readonly');
   }
 }
 
-// ---------- CALCULAR EDAD ----------
-document.getElementById('fechaNac').addEventListener('change', calcularEdad);
+// ---------- Edad ----------
+el.fechaNac.addEventListener('change', calcularEdad);
 function calcularEdad(){
-  const fechaNac = new Date(document.getElementById('fechaNac').value);
+  const fechaNac = new Date(el.fechaNac.value);
   if(isNaN(fechaNac)) return;
   const hoy = new Date();
   let años = hoy.getFullYear() - fechaNac.getFullYear();
@@ -404,12 +536,11 @@ function calcularEdad(){
   let dias = hoy.getDate() - fechaNac.getDate();
   if(dias<0){ meses--; const mesAnt = new Date(hoy.getFullYear(), hoy.getMonth(),0); dias+=mesAnt.getDate();}
   if(meses<0){años--;meses+=12;}
-  document.getElementById('edad').value = `${años} años, ${meses} meses, ${dias} días`;
+  el.edad.value = `${años} años, ${meses} meses, ${dias} días`;
 }
 
-// ---------- VALIDACIÓN Y GUARDAR REGISTRO ----------
-document.getElementById('btnGuardar').addEventListener('click',()=>{
-  alerta.style.display='none';
+// ---------- Guardar ----------
+el.btnGuardar.addEventListener('click', () => {
   const campos = [
     {id:'profesion', nombre:'Profesión'},
     {id:'personal', nombre:'Personal'},
@@ -422,65 +553,69 @@ document.getElementById('btnGuardar').addEventListener('click',()=>{
     {id:'fechaNac', nombre:'Fecha de nacimiento'},
     {id:'departamento', nombre:'Departamento'},
     {id:'provincia', nombre:'Provincia'},
-    {id:'distrito', nombre:'Distrito'}
+    {id:'distrito', nombre:'Distrito'},
+    {id:'motivoLlamada', nombre:'Motivo de la llamada'}
   ];
 
-  let errores = [];
-  campos.forEach(c=>{
-    const val = document.getElementById(c.id).value.trim();
-    if(!val) errores.push(c.nombre);
-  });
-
-  if(errores.length>0){
-    alerta.textContent = '❌ Complete: ' + errores.join(', ');
-    alerta.className = 'alert error';
-    alerta.style.display='block';
-    return;
+  for (const c of campos) {
+    if (!document.getElementById(c.id).value.trim()) {
+      alert(`❌ Complete: ${c.nombre}`);
+      return;
+    }
   }
 
-  fechaTermino.value = formatoFecha(new Date());
-  alerta.textContent = '✅ Registro guardado correctamente.';
-  alerta.className = 'alert success';
-  alerta.style.display='block';
+  if (el.motivoLlamada.value === 'OTROS') {
+    const otro = el.motivoOtro.value.trim();
+    if (!otro) {
+      alert('❌ Especifique el motivo en "OTROS"');
+      el.motivoOtro.focus();
+      return;
+    }
+  }
+
+  el.fechaTermino.value = formatoFecha(new Date());
+  alert('✅ Registro guardado correctamente.');
 });
 
-// ---------- LIMPIAR TODO ----------
-document.getElementById('btnLimpiar').addEventListener('click',()=>{
+// ---------- Limpiar ----------
+el.btnLimpiar.addEventListener('click',()=>{
   document.querySelectorAll('input').forEach(i=>i.value='');
-  document.querySelectorAll('select').forEach(s=>{ s.selectedIndex = 0; });
-  nombreCompleto.style.background='#fff';
-  estado.textContent='Buscando conexión con el servidor...';
+  document.querySelectorAll('select').forEach(s=>s.selectedIndex = 0);
+  el.nombreCompleto.style.background='#fff';
+  el.mensajeDNI.style.display = 'none';
+  el.motivoOtro.style.display = 'none';
   inicioLlamada = new Date();
-  alerta.style.display='none';
 });
 
-// ---------- UBICACIÓN CONDICIONAL ----------
-const provincias = {
-  Lima:['Lima','Barranca','Canta'],
-  Cusco:['Cusco','Urubamba','Sicuani'],
-  Arequipa:['Arequipa','Camana','Caylloma']
+// ---------- Ubigeos (MUESTREO MÍNIMO) ----------
+const ubigeos = {
+  "LIMA": {"provincias":["Lima","Barranca"],"distritos":{"Lima":["Lima","San Isidro","Miraflores"],"Barranca":["Barranca","Supe"]}},
+  "CALLAO": {"provincias":["Callao"],"distritos":{"Callao":["Callao","Bellavista","La Punta"]}},
+  "AREQUIPA": {"provincias":["Arequipa"],"distritos":{"Arequipa":["Arequipa","Cayma","Yanahuara"]}}
 };
-const distritos = {
-  Lima:{Lima:['Miraflores','San Isidro'],Barranca:['Paramonga','Supe'],Canta:['Canta','San Miguel']},
-  Cusco:{Cusco:['Wanchaq','San Sebastián'],Urubamba:['Ollantaytambo'],Sicuani:['Sicuani']},
-  Arequipa:{Arequipa:['Cayma','Yanahuara'],Camana:['Camaná','Ocoña'],Caylloma:['Chivay','Cabanaconde']}
-};
-const deptoSel=document.getElementById('departamento');
-const provSel=document.getElementById('provincia');
-const distSel=document.getElementById('distrito');
 
-deptoSel.addEventListener('change',()=>{
-  provSel.innerHTML='<option value="">Seleccione...</option>';
-  distSel.innerHTML='<option value="">Seleccione...</option>';
-  const provs=provincias[deptoSel.value]||[];
-  provs.forEach(p=>{let opt=document.createElement('option');opt.textContent=p;provSel.appendChild(opt);});
+Object.keys(ubigeos).forEach(depto => {
+  const opt = document.createElement('option');
+  opt.value = depto;
+  opt.textContent = depto;
+  el.departamento.appendChild(opt);
 });
-provSel.addEventListener('change',()=>{
-  distSel.innerHTML='<option value="">Seleccione...</option>';
-  const dists=(distritos[deptoSel.value]||{})[provSel.value]||[];
-  dists.forEach(d=>{let opt=document.createElement('option');opt.textContent=d;distSel.appendChild(opt);});
+
+el.departamento.addEventListener('change', () => {
+  el.provincia.innerHTML = '<option value="">Seleccione...</option>';
+  el.distrito.innerHTML = '<option value="">Seleccione...</option>';
+  const depto = ubigeos[el.departamento.value];
+  if (!depto) return;
+  el.provincia.innerHTML = '<option value="">Seleccione...</option>' +
+    depto.provincias.map(p => `<option value="${p}">${p}</option>`).join('');
+});
+
+el.provincia.addEventListener('change', () => {
+  el.distrito.innerHTML = '<option value="">Seleccione...</option>';
+  const dists = ubigeos[el.departamento.value]?.distritos?.[el.provincia.value] || [];
+  el.distrito.innerHTML = '<option value="">Seleccione...</option>' +
+    dists.map(d => `<option value="${d}">${d}</option>`).join('');
 });
 </script>
-
 </body>
 </html>
